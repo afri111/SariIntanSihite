@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sari Intan Sihite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <a-scene>
+        <a-sky src="assets/room.jpg" rotation="0 -130 0"></a-sky>
+
+        <!-- Gambar pertama -->
+        <a-image src="assets/s1.jpg" width="2" height="3" orbit-image="radius: 10; speed: 0.10; height: 1; angle: 0"
+            motion-bounce>
+            <a-entity text="value: Happy Birthday Sari Intan Sihite; align: center; width: 10" position="0 2 0"></a-entity>
+            <a-entity text="value: 07 Mei 2025; align: center; width: 10" position="0 -2 0"></a-entity>
+            <a-entity particle-system="preset: snow; particleCount: 1000; color: #ff66cc; size: 1; opacity: 0.8; shape: sphere; active: true"
+                position="0 1 0"></a-entity>
+        </a-image>
+
+        <!-- Gambar kedua -->
+        <a-image src="assets/s2.jpg" width="2" height="3" orbit-image="radius: 10; speed: 0.10; height: 1; angle: 120"
+            motion-bounce>
+            <a-entity text="value: Selamat Ulang Tahun yaa!; align: center; width: 10" position="0 2 0"></a-entity>
+            <a-entity text="value: Semoga panjang umur sehat selalu, dan makin pinter biar dapet IPK: 4; align: center; width: 10" position="0 -2 0"></a-entity>
+            <a-entity particle-system="preset: snow; particleCount: 1000; color: #ff66cc; size: 1; opacity: 0.8; shape: sphere; active: true"
+                position="0 1 0"></a-entity>
+        </a-image>
+
+        <!-- Gambar ketiga -->
+        <a-image src="assets/s3.jpg" width="2" height="3" orbit-image="radius: 10; speed: 0.10; height: 1; angle: 240"
+            motion-bounce>
+            <a-entity text="value: Terus berjuang buat tahun ini yah, meskipun berat. Tapi percayalah di akhir nanti kamu akan sangat berbahagia!; align: center; width: 10"
+                position="0 2.2 0"></a-entity>
+            <a-entity text="value: Semangat belajar nya , jangan merasa lelah ya!; align: center; width: 10" position="0 -2 0"></a-entity>
+            <a-entity particle-system="preset: snow; particleCount: 1000; color: #ff66cc; size: 1; opacity: 0.8; shape: sphere; active: true"
+                position="0 1 0"></a-entity>
+        </a-image>
+
+        <!-- Balon terbang 360 derajat dengan ukuran lebih besar -->
+        <a-entity floating-balloons="count: 80; min-radius: 5; max-radius: 12; max-height: 7; speed: 10; balloon-size: 0.8"></a-entity>
+
+        <!-- Komponen orbit image -->
+        <script>
+            AFRAME.registerComponent('orbit-image', {
+                schema: {
+                    radius: { type: 'number', default: 2.5 },
+                    speed: { type: 'number', default: 0.25 },
+                    height: { type: 'number', default: 1 },
+                    angle: { type: 'number', default: 0 }
+                },
+                init: function () {
+                    this.angle = this.data.angle * (Math.PI / 180);
+                },
+                tick: function (time, timeDelta) {
+                    this.angle += (timeDelta / 1000) * this.data.speed;
+                    const x = this.data.radius * Math.sin(this.angle);
+                    const z = this.data.radius * Math.cos(this.angle);
+                    this.el.setAttribute('position', { x: x, y: this.data.height, z: z });
+                    this.el.object3D.lookAt(0, this.data.height, 0);
+                }
+            });
+        </script>
+
+        <!-- Komponen balon terbang -->
+        <script>
+            AFRAME.registerComponent('floating-balloons', {
+                schema: {
+                    count: { type: 'int', default: 50 },
+                    speed: { type: 'number', default: 10 },
+                    minRadius: { type: 'number', default: 5 },
+                    maxRadius: { type: 'number', default: 10 },
+                    maxHeight: { type: 'number', default: 6 },
+                    balloonSize: { type: 'number', default: 5 }
+                },
+                init: function () {
+                    const sceneEl = this.el;
+                    for (let i = 0; i < this.data.count; i++) {
+                        const balloon = document.createElement('a-sphere');
+                        const radius = Math.random() * (this.data.maxRadius - this.data.minRadius) + this.data.minRadius;
+                        const angle = (i / this.data.count) * Math.PI * 2;
+                        const x = radius * Math.cos(angle);
+                        const z = radius * Math.sin(angle);
+                        const y = Math.random() * this.data.maxHeight;
+
+                        balloon.setAttribute('position', { x: x, y: y, z: z });
+                        balloon.setAttribute('radius', this.data.balloonSize); // Mengubah ukuran balon
+                        balloon.setAttribute('color', '#ff66cc');
+                        balloon.setAttribute('opacity', '0.9');
+
+                        // Kecepatan acak untuk setiap balon
+                        const randomSpeed = Math.random() * this.data.speed + 5;
+
+                        balloon.setAttribute('animation', {
+                            property: 'position',
+                            to: `${x} ${y + 3} ${z}`,
+                            dur: randomSpeed * 1000,
+                            dir: 'alternate',
+                            loop: true,
+                            easing: 'easeInOutSine'
+                        });
+
+                        sceneEl.appendChild(balloon);
+                    }
+                }
+            });
+        </script>
+
+    </a-scene>
+</body>
+
+</html>
